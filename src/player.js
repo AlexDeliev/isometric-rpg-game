@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { search } from './pathfinding';
+import { World } from 'three/examples/jsm/libs/ecsy.module.js';
 
 export class Player extends THREE.Mesh {
     /** 
@@ -6,14 +8,14 @@ export class Player extends THREE.Mesh {
     **/
     raycaster = new THREE.Raycaster();
 
-    constructor(camera, terrain) {
+    constructor(camera, world) {
         super();
         this.geometry = new THREE.CapsuleGeometry(0.25, 0.5);
         this.material = new THREE.MeshStandardMaterial({ color: 0x4040c0 });
         this.position.set(5.5, 0.5, 5.5);
 
         this.camera = camera;
-        this.terrain = terrain;
+        this.world = world;
         window.addEventListener( 'mousedown', this.onMouseDown.bind(this));
     }
     /** 
@@ -21,7 +23,6 @@ export class Player extends THREE.Mesh {
     **/
 
     onMouseDown(event) {
-        //console.log('Mouse down');
 
         const coords = new THREE.Vector2( 
             (event.clientX / window.innerWidth ) * 2 - 1,
@@ -32,15 +33,21 @@ export class Player extends THREE.Mesh {
         this.raycaster.setFromCamera( coords, this.camera );
         
         // calculate objects intersecting the picking ray
-        const intersection = this.raycaster.intersectObjects([this.terrain]);
+        const intersection = this.raycaster.intersectObject(this.world.terrain);
     
         
         if(intersection.length > 0) { 
+            const selectedCoords = new THREE.Vector2(
+                Math.floor(intersection[0].point.x),
+                Math.floor(intersection[0].point.z)
+            );
             this.position.set(
-                Math.floor(intersection[0].point.x) + 0.5,
+                selectedCoords.x + 0.5,
                 0.5,
-                Math.floor(intersection[0].point.z) + 0.5
+                selectedCoords.y + 0.5
             )
+            search( selectedCoords, null, this.world);
+            console.log(selectedCoords); 
         }
     }
 }

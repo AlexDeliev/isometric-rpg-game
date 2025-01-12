@@ -11,7 +11,8 @@
     - {x} Draw character on the screen
     - {x} Point and Click controls
     - { } Navigation ( ignore obstacles)
-        - { } Algorithm
+        - { } A\* algorithm
+        - { } world -> get( x, z )
     - { } Improved Navigation (obtacle avoidance)
     - { } Enemies
         - { } Draw enemies on the scrn
