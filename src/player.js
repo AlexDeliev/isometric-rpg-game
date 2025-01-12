@@ -37,17 +37,16 @@ export class Player extends THREE.Mesh {
     
         
         if(intersection.length > 0) { 
+            const playerCoords = new THREE.Vector2(
+                Math.floor(this.position.x),
+                Math.floor(this.position.z)
+            );
             const selectedCoords = new THREE.Vector2(
                 Math.floor(intersection[0].point.x),
                 Math.floor(intersection[0].point.z)
             );
-            this.position.set(
-                selectedCoords.x + 0.5,
-                0.5,
-                selectedCoords.y + 0.5
-            )
-            search( selectedCoords, null, this.world);
-            console.log(selectedCoords); 
+
+            search( playerCoords, selectedCoords, this.world);
         }
     }
 }
