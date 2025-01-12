@@ -8,8 +8,8 @@
     - {x} Prevent intersecting
     - {x} Add controls to UI for world
 - { } Player Character
-    - { } Draw character on the screen
-    - { } Point and Click controls
+    - {x} Draw character on the screen
+    - {x} Point and Click controls
     - { } Navigation ( ignore obstacles)
         - { } Algorithm
     - { } Improved Navigation (obtacle avoidance)

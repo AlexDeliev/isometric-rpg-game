@@ -1,9 +1,13 @@
 import * as THREE from 'three';
 import { If } from 'three/tsl';
 
-export class World extends THREE.Mesh {
-    #objectMap = new Map();
+// Load the grid texture
+const textureLoader = new THREE.TextureLoader();
+const gridTexture = textureLoader.load('assets/textures/grid.png');
 
+export class World extends THREE.Group {
+    #objectMap = new Map();
+    // Constructor for the World class
     constructor(width, height) {
         super();
 
@@ -26,7 +30,7 @@ export class World extends THREE.Mesh {
 
         this.generate();
     }   
-
+    // Generate the terrain and objects
     generate() {
         this.clear();
         this.createTerrain();
@@ -34,7 +38,7 @@ export class World extends THREE.Mesh {
         this.createRocks();
         this.createBushes();
     }
-
+    // Clear the terrain and objects
     clear() {   
         if(this.terrain) {
             this.terrain.geometry.dispose();
@@ -65,10 +69,17 @@ export class World extends THREE.Mesh {
 
         this.#objectMap.clear();
     }
+    // Create a terrain mesh
     createTerrain() {
+        gridTexture.repeat = new THREE.Vector2(this.width, this.height);
+        gridTexture.wrapS = THREE.RepeatWrapping;
+        gridTexture.wrapT = THREE.RepeatWrapping;
+        gridTexture.colorSpace = THREE.SRGBColorSpace;
+
         const terrainMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x50a000
+            //color: 0x50a000
             //wireframe: true
+            map: gridTexture
         });
 
         const terrainGeometry = new THREE.PlaneGeometry(
@@ -80,10 +91,11 @@ export class World extends THREE.Mesh {
         
         this.terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);     
         this.terrain.rotation.x = -Math.PI / 2;
+        this.terrain.name = 'Terrain';
         this.terrain.position.set(this.width / 2, 0, this.height / 2);
         this.add(this.terrain);
     }
-
+    // Create trees
     createTrees() { 
         const treeHeight = 2;
         const treeRadius = 0.5;
@@ -126,7 +138,7 @@ export class World extends THREE.Mesh {
         }
        
     }
-
+    // Create rocks
     createRocks() { 
         const minRockRadius = 0.1;
         const maxRockRadius = 0.3;
@@ -170,7 +182,7 @@ export class World extends THREE.Mesh {
         }
        
     }
-
+    // Create bushes
     createBushes() { 
         const minBushRadius = 0.1;
         const maxBushRadius = 0.3;

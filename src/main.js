@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { World } from './world.js';
+import { Player } from './player.js';
+
 
 const gui = new GUI();
 
@@ -12,6 +14,7 @@ document.body.appendChild( stats.dom );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setAnimationLoop( animate );
+renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild( renderer.domElement );
 
 const scene = new THREE.Scene();
@@ -24,6 +27,10 @@ scene.background = new THREE.Color(0x87ceeb); // Светлосин цвят
 // Creating world with width and height
 const world = new World(10, 10);
 scene.add(world);
+
+// Creating player
+const player = new Player(camera, world.terrain);
+scene.add(player);
 
 // Creating directional light (simulating sunlight) to illuminate the scene
 const sun = new THREE.DirectionalLight();
@@ -42,8 +49,14 @@ const material = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
 const cube = new THREE.Mesh( geometry, material );
 scene.add( cube );
 */
-camera.position.set(10, 2, 10); // Correctly set the camera position
 
+// Set the camera position to the center of the world
+//camera.position.set(10, 2, 10); // Correctly set the camera position
+const centerX = world.width / 2;
+const centerZ = world.height / 2;
+
+camera.position.set(centerX, 10, centerZ + 10); // Camera position set to the center of the world and 10 units above it
+controls.target.set(centerX, 0, centerZ);       // Set the camera target to the center of the world
 controls.update();
 
 function animate() {
