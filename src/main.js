@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { World } from './world.js';
 
 const gui = new GUI();
 
@@ -17,8 +18,16 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 const controls = new OrbitControls( camera, renderer.domElement );
 
+//Change the background color of the scene
+scene.background = new THREE.Color(0x87ceeb); // Светлосин цвят
+
+// Creating world with width and height
+const world = new World(10, 10);
+scene.add(world);
+
 // Creating directional light (simulating sunlight) to illuminate the scene
 const sun = new THREE.DirectionalLight();
+sun.intensity = 3;  
 sun.position.set( 1, 2, 3 );
 scene.add(sun);
 
@@ -27,13 +36,14 @@ const ambient = new THREE.AmbientLight();
 ambient.intensity = 0.5;
 scene.add(ambient);
 
-// Creating a cube with geometry and material
+/* Creating a cube with geometry and material
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 const material = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
 const cube = new THREE.Mesh( geometry, material );
 scene.add( cube );
+*/
+camera.position.set(10, 2, 10); // Correctly set the camera position
 
-camera.position.z = 5;
 controls.update();
 
 function animate() {
@@ -50,6 +60,23 @@ window.addEventListener('resize', () => {
 });
 
 // Creating a GUI for interactive cube settings
-const folder = gui.addFolder('Cube');
-folder.add(cube.position, 'x', -2, 2, 0.1).name('Position X');
-folder.addColor(cube.material, 'color');
+const worldFolder = gui.addFolder('World');
+worldFolder.add(world, 'width', 1, 20, 1).name('Width');
+worldFolder.add(world, 'height', 1, 20, 1).name('Height');
+worldFolder.add(world, 'treeCount', 0, 100, 1).name('Tree Count');
+worldFolder.add(world, 'rockCount', 0, 100, 1).name('Rock Count');  
+worldFolder.add(world, 'bushCount', 0, 100, 1).name('Bush Count');  
+/*worldFolder.addColor({ color: world.terrain.material.color.getStyle() }, 'color')
+    .name('Terrain Color')
+    .onChange((value) => {
+        world.terrain.material.color.set(value); // Update the terrain color
+    });
+*/
+// Добавяне на GUI опция за промяна на цвета на фона
+gui.addColor({ background: scene.background.getStyle() }, 'background')
+    .name('Background Color')
+    .onChange((value) => {
+        scene.background.set(value); // Задаване на новия цвят
+    });
+
+worldFolder.add(world, 'generate').name('Generate');
