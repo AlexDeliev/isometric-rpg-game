@@ -1,143 +1,133 @@
 import * as THREE from 'three';
-import { World } from "./world";
+import { World } from './world';
+import { getKey } from './utils';
 
-const getKey = (coords) => `${coords.x}-${coords.y}`;
-
+/**
+ * Finds the path between the start and end point (if one exists)
+ * @param {THREE.Vector3} start 
+ * @param {THREE.Vector3} end 
+ * @param {World} world 
+ * @return {THREE.Vector3[] | null} If path is found, returns the array of
+ * coordinates that make up the path, otherwise returns null
+ */
 export function search(start, end, world) {
-    if (start.x === end.x && start.y === end.y) {
-        return [];
-    }
+  // If the end is equal to the start, skip searching
+  if (start.equals(end)) return [];
 
-    const maxSearchDistance = 20;
-    const cameFrom = new Map();
-    const cost = new Map();
-    cost.set(getKey(start), 0);
-    const frontier = [start];
-    let pathFound = false;
+  console.log(`Searching for path from (${start.x},${start.z}) to (${end.x},${end.z})`);
 
-    while (frontier.length > 0) {
-        frontier.sort((v1, v2) => {
-            const d1 = cost.get(getKey(v1)) + v1.manhattanDistanceTo(end);
-            const d2 = cost.get(getKey(v2)) + v2.manhattanDistanceTo(end);
-            return d1 - d2;
-        });
+  let pathFound = false;
+  const maxSearchDistance = 20;
 
-        const candidate = frontier.shift();
+  const cameFrom = new Map();
+  const cost = new Map();
+  const frontier = [start];
+  cost.set(getKey(start), 0);
 
-        if (candidate.x === end.x && candidate.y === end.y) {
-            pathFound = true;
-            break;
-        }
-
-        if (candidate.manhattanDistanceTo(start) > maxSearchDistance) {
-            continue;
-        }
-
-        const neighbors = getNeighbors(candidate, world, cost);
-        frontier.push(...neighbors);
-
-        neighbors.forEach((neighbor) => {
-            cameFrom.set(getKey(neighbor), candidate);
-        });
-    }
-
-    if (!pathFound) {
-        return null;
-    }
-
-    const path = [];
-    let curr = end;
-
-    while (getKey(curr) !== getKey(start)) {
-        path.push(curr);
-        curr = cameFrom.get(getKey(curr));
-    }
-    path.reverse();
-    return path;
-}
-
-function getNeighbors(coords, world, cost) {
-    const neighbors = [];
-    const potentialNeighbors = [
-        new THREE.Vector2(coords.x - 1, coords.y), // Left
-        new THREE.Vector2(coords.x + 1, coords.y), // Right
-        new THREE.Vector2(coords.x, coords.y - 1), // Top
-        new THREE.Vector2(coords.x, coords.y + 1), // Bottom
-    ];
-
-    const currentCost = cost.get(getKey(coords));
-
-    potentialNeighbors.forEach((neighbor) => {
-        if (
-            neighbor.x >= 0 &&
-            neighbor.y >= 0 &&
-            neighbor.x < world.width &&
-            neighbor.y < world.height &&
-            !world.getObject(neighbor)
-        ) {
-            const newCost = currentCost + 1;
-            if (!cost.has(getKey(neighbor)) || newCost < cost.get(getKey(neighbor))) {
-                cost.set(getKey(neighbor), newCost);
-                neighbors.push(neighbor);
-            }
-        }
+  let counter = 0;
+  while (frontier.length > 0) {
+    // Get the square with the shortest distance metric
+    // Dijkstra - distance to origin
+    // A* - distance to origin + estimated distance to destination
+    frontier.sort((v1, v2) => {
+      const g1 = start.manhattanDistanceTo(v1);
+      const g2 = start.manhattanDistanceTo(v2);
+      const h1 = v1.manhattanDistanceTo(end);
+      const h2 = v2.manhattanDistanceTo(end);
+      const f1 = g1 + h1;
+      const f2 = g2 + h2;
+      return f1 - f2;
     });
 
-    return neighbors;
+    const candidate = frontier.shift();
+
+    counter++;
+
+    // Did we find the end goal?
+    if (candidate.equals(end)) {
+      console.log(`Path found (visited ${counter} candidates)`);
+      pathFound = true;
+      break;
+    }
+
+    // If we have exceeded the max search distance, skip to next candidate
+    if (candidate.manhattanDistanceTo(start) > maxSearchDistance) {
+      continue;
+    }
+
+    // Search the neighbors of the square
+    const neighbors = getNeighbors(candidate, world, cost);
+    frontier.push(...neighbors);
+
+    // Mark which square each neighbor came from
+    neighbors.forEach((neighbor) => {
+      cameFrom.set(getKey(neighbor), candidate);
+    })
+  }
+
+  if (!pathFound) return null;
+
+  // Reconstruct the path
+  let curr = end;
+  const path = [curr];
+
+  console.log(path);
+
+  while (getKey(curr) !== getKey(start)) {
+    const prev = cameFrom.get(getKey(curr));
+    path.push(prev);
+    curr = prev;
+  }
+
+  path.reverse();
+  path.shift();
+
+  return path;
 }
 
-export class Player extends THREE.Mesh {
-    raycaster = new THREE.Raycaster();
+/**
+ * Returns array of coordinates for neighboring squares
+ * @param {THREE.Vector3} coords 
+ * @param {World} world
+ * @param {Map} cost
+ */
+function getNeighbors(coords, world, cost) {
+  let neighbors = [];
 
-    constructor(camera, world) {
-        super();
-        this.geometry = new THREE.CapsuleGeometry(0.25, 0.5);
-        this.material = new THREE.MeshStandardMaterial({ color: 0x4040c0 });
-        this.position.set(1.5, 0.5, 5.5);
-        this.camera = camera;
-        this.world = world;
-        window.addEventListener('mousedown', this.onMouseDown.bind(this));
-    }
+  // Left
+  if (coords.x > 0) {
+    neighbors.push(new THREE.Vector3(coords.x - 1, 0, coords.z));
+  }
+  // Right
+  if (coords.x < world.width - 1) {
+    neighbors.push(new THREE.Vector3(coords.x + 1, 0, coords.z));
+  }
+  // Top
+  if (coords.z > 0) {
+    neighbors.push(new THREE.Vector3(coords.x, 0, coords.z - 1));
+  }
+  // Bottom
+  if (coords.z < world.height - 1) {
+    neighbors.push(new THREE.Vector3(coords.x, 0, coords.z + 1));
+  }
 
-    onMouseDown(event) {
-        const coords = new THREE.Vector2(
-            (event.clientX / window.innerWidth) * 2 - 1,
-            -(event.clientY / window.innerHeight) * 2 + 1
-        );
+  // Cost to get to neighbor square is the current square cost + 1
+  const newCost = cost.get(getKey(coords)) + 1;
 
-        this.raycaster.setFromCamera(coords, this.camera);
-        const intersection = this.raycaster.intersectObject(this.world.terrain);
+  // Exclude any squares that are already visited, as well
+  // as any squares that are occupied
+  neighbors = neighbors
+    .filter(coords => {
+      // If neighboring square has not yet been visited, or this
+      // is a cheaper path cost, then include it in the search
+      if (!cost.has(getKey(coords)) || newCost < cost.get(getKey(coords))) {
+        cost.set(getKey(coords), newCost);
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .filter(coords => !world.getObject(coords));
 
-        if (intersection.length > 0) {
-            const playerCoords = new THREE.Vector2(
-                Math.floor(this.position.x),
-                Math.floor(this.position.z)
-            );
-            const selectedCoords = new THREE.Vector2(
-                Math.floor(intersection[0].point.x),
-                Math.floor(intersection[0].point.z)
-            );
-
-            const path = search(playerCoords, selectedCoords, this.world);
-
-            if (path === null) {
-                console.log("No path found!");
-                return;
-            }
-
-            while (this.world.path.children.length > 0) {
-                const node = this.world.path.children.pop();
-                this.world.path.remove(node);
-            }
-
-            path.forEach((coords) => {
-                const node = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.1),
-                    new THREE.MeshBasicMaterial({ color: 0xff0000 })
-                );
-                node.position.set(coords.x + 0.5, 0, coords.y + 0.5);
-                this.world.path.add(node);
-            });
-        }
-    }
+  return neighbors;
 }

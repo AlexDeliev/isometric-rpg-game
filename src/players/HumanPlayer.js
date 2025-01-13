@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Player } from '../players/Player';
+import { Player } from './Player';
 import { MovementAction } from '../actions/MovementAction';
 
 export class HumanPlayer extends Player {

@@ -16,13 +16,13 @@
         - {x} world -> get( x, z )
     - {x} Improved Navigation (obtacle avoidance)
 - { } Actions 
-    - { } Refactoring / Reorganization
-    - { } Implementing the base Action class
+    - {x} Refactoring / Reorganization
+    - {x} Implementing the bas framework
+    - {x} GameObject
+        - {x} Player (Human/NPC)
+        - {x} Trees / Rocks / Bushes
+    - {x} Implementing the base Action class
         - { } Movement actions
-    - { } Implementing the bas framework
-        -{ } GameObject
-            - { } Player (Human/NPC)
-            - { } Trees / Rocks / Bushes
     - { } Asynchronus Input
         - { } Selecting a target square
         - { } Selecting a target objct
