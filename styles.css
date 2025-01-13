@@ -1,0 +1,20 @@
+/* styles.css */
+body {
+    margin: 0;
+  }
+  
+  #status-text {
+    color: white;
+    font-size: 20px;
+  }
+  
+  #ui {
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 60px;
+    padding: 8px;
+    position: absolute;
+    background-color: #333;
+  }
+  

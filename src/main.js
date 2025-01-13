@@ -5,6 +5,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { World } from './world';
 import { HumanPlayer } from './players/HumanPlayer';
 import { CombatManager } from './CombatManager';
+import { Action, MovementAction } from './actions';
 
 const gui = new GUI();
 
@@ -35,9 +36,9 @@ const blueMaterial = new THREE.MeshStandardMaterial({ color: 0x4040c0 });
 const redMaterial = new THREE.MeshStandardMaterial({ color: 0xc04040 });
 
 // Create two players
-const player1 = new HumanPlayer(new THREE.Vector3(1, 0, 5), camera, world, blueMaterial);
+const player1 = new HumanPlayer(new THREE.Vector3(1, 0, 5), camera, world);
 scene.add(player1);
-const player2 = new HumanPlayer(new THREE.Vector3(8, 0, 3), camera, world, redMaterial);
+const player2 = new HumanPlayer(new THREE.Vector3(8, 0, 3), camera, world);
 scene.add(player2);
 
 const combatManager = new CombatManager();
