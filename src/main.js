@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { World } from './world';
-import { HumanPlayer } from './players/HumanPlayer';
+import RaycastingHelper from './helpers/RaycastingHelper';
 import { CombatManager } from './CombatManager';
 import { Action, MovementAction } from './actions';
 
@@ -25,6 +25,8 @@ controls.target.set(5, 0, 5);
 camera.position.set(0, 2, 0);
 controls.update();
 
+RaycastingHelper.initialize(camera);
+
 //Change the background color of the scene
 scene.background = new THREE.Color(0x87ceeb);
 
@@ -35,18 +37,10 @@ scene.add(world);
 const blueMaterial = new THREE.MeshStandardMaterial({ color: 0x4040c0 });
 const redMaterial = new THREE.MeshStandardMaterial({ color: 0xc04040 });
 
-// Create two players
-const player1 = new HumanPlayer(new THREE.Vector3(1, 0, 5), camera, world);
-scene.add(player1);
-world.addObject(player1, 'players');
 
-const player2 = new HumanPlayer(new THREE.Vector3(8, 0, 3), camera, world);
-scene.add(player2);
-world.addObject(player2, 'players');
 
 const combatManager = new CombatManager();
-combatManager.addPlayer(player1);
-combatManager.addPlayer(player2);
+
 
 const sun = new THREE.DirectionalLight();
 sun.intensity = 3;
@@ -90,4 +84,6 @@ gui.addColor({ background: scene.background.getStyle() }, 'background')
     .onChange((value) => {
         scene.background.set(value); // Задаване на новия цвят
     });
-combatManager.takeTurns();
+
+world.objects.players.children.forEach((player) => combatManager.addPlayer(player));
+combatManager.takeTurns(world);
