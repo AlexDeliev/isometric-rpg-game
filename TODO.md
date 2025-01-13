@@ -1,38 +1,46 @@
-#To Do List
+# To Do List
 
-- {x} World
-    - {x} Terrain - Flat plane
-    - {x} Trees
-    - {x} Rocks
-    - {x} Bushes
-    - {x} Prevent intersecting
-    - {x} Add controls to UI for world
-- {x} Player Character
-    - {x} Draw character on the screen
-    - {x} Point and Click controls
-    - {x} Navigation ( ignore obstacles)
-        - {x} Dijkstra's alghorithm 
-        - {x} A\* algorithm
-        - {x} world -> get( x, z )
-    - {x} Improved Navigation (obtacle avoidance)
-- { } Actions 
-    - { } Refactoring / Reorganization
-    - { } Implementing the base Action class
-        - { } Movement actions
-    - { } Implementing the bas framework
-        -{ } GameObject
-            - { } Player (Human/NPC)
-            - { } Trees / Rocks / Bushes
-    - { } Asynchronus Input
-        - { } Selecting a target square
-        - { } Selecting a target objct
-    - { } Adding UI
-        - { } List out action for the active player
-        - { } Status bar
-    - { } Combat Manager
-        - { } Integrate through all the players
-        - { } Request an action from each player
-- { } Enemies
-    - { } Draw enemies on the screen
-    - { } Patrol
-- { } Combat
+- [x] World
+  - [x] Terrain - Flat plane
+  - [x] Trees
+  - [x] Rocks
+  - [x] Bushes
+  - [x] Prevent trees/rocks/bushes from intersecting each other
+  - [x] Add controls to UI for world
+- [x] Player Character
+  - [x] Draw character on the screen
+  - [x] Point and click controls
+  - [x] Navigation (without obstacles)
+    - [x] Dijkstra's algorithm
+    - [x] A\* algorithm
+    - [x] world -> get(x, z)
+  - [x] Improved Navigation (obstacle avoidance)
+- [x] Actions
+  - [x] Refactoring / Reorganization
+  - [x] Implementing the base framework
+  - [x] GameObject
+    - [x] Player (Human/Computer Player)
+    - [x] Trees / Rocks / Bushes
+  - [x] Implementing the base Action class
+    - [x] MovementAction
+  - [x] Asynchronous Input
+    - [x] Selecting a target square
+  - [x] Combat Manager
+    - [x] Iterate through all the players
+    - [x] Request an action from each player
+- [x] Combat
+  - [x] Action
+    - [x] MeleeAttackAction
+    - [x] RangedAttackAction
+  - [x] Enemies
+    - [x] Hit Points
+    - [x] Remove the enemies when they are killed
+  - [x] Pathfinding
+    - [x] Don't allow players to move through other players
+  - [x] Asynchronous Input
+    - [x] Selecting a target object
+  - [x] Add some UI
+    - [x] List out actions for the active player
+    - [x] Status bar
+- [ ] Graphics
+  - { } 3D assets for the player models
