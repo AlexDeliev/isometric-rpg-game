@@ -1,20 +1,38 @@
 #To Do List
 
-- { } World
+- {x} World
     - {x} Terrain - Flat plane
     - {x} Trees
     - {x} Rocks
     - {x} Bushes
     - {x} Prevent intersecting
     - {x} Add controls to UI for world
-- { } Player Character
+- {x} Player Character
     - {x} Draw character on the screen
     - {x} Point and Click controls
-    - { } Navigation ( ignore obstacles)
-        - { } A\* algorithm
-        - { } world -> get( x, z )
-    - { } Improved Navigation (obtacle avoidance)
-    - { } Enemies
-        - { } Draw enemies on the scrn
-        - { } Patrol
-    - { } Combat
+    - {x} Navigation ( ignore obstacles)
+        - {x} Dijkstra's alghorithm 
+        - {x} A\* algorithm
+        - {x} world -> get( x, z )
+    - {x} Improved Navigation (obtacle avoidance)
+- { } Actions 
+    - { } Refactoring / Reorganization
+    - { } Implementing the base Action class
+        - { } Movement actions
+    - { } Implementing the bas framework
+        -{ } GameObject
+            - { } Player (Human/NPC)
+            - { } Trees / Rocks / Bushes
+    - { } Asynchronus Input
+        - { } Selecting a target square
+        - { } Selecting a target objct
+    - { } Adding UI
+        - { } List out action for the active player
+        - { } Status bar
+    - { } Combat Manager
+        - { } Integrate through all the players
+        - { } Request an action from each player
+- { } Enemies
+    - { } Draw enemies on the screen
+    - { } Patrol
+- { } Combat
