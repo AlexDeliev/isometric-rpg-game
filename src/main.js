@@ -5,12 +5,11 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { World } from './world';
 import RaycastingHelper from './helpers/RaycastingHelper';
 import { CombatManager } from './CombatManager';
-import { Action, MovementAction } from './actions';
 
 const gui = new GUI();
 
-const stats = new Stats()
-document.body.appendChild(stats.dom)
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -18,29 +17,31 @@ renderer.setAnimationLoop(animate);
 renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
+//
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.OrthographicCamera(
+  window.innerWidth / -2,
+  window.innerWidth / 2,
+  window.innerHeight / 2,
+  window.innerHeight / -2,
+  0.1,
+  1000
+);
+camera.zoom = 100;
+camera.position.set(15, 5, 15);
+camera.updateProjectionMatrix();
+camera.layers.enable(1);
+
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(5, 0, 5);
-camera.position.set(0, 2, 0);
 controls.update();
 
 RaycastingHelper.initialize(camera);
 
-//Change the background color of the scene
-scene.background = new THREE.Color(0x87ceeb);
-
 const world = new World(10, 10);
 scene.add(world);
 
-// Create materials for the players
-const blueMaterial = new THREE.MeshStandardMaterial({ color: 0x4040c0 });
-const redMaterial = new THREE.MeshStandardMaterial({ color: 0xc04040 });
-
-
-
 const combatManager = new CombatManager();
-
 
 const sun = new THREE.DirectionalLight();
 sun.intensity = 3;
@@ -51,14 +52,30 @@ const ambient = new THREE.AmbientLight();
 ambient.intensity = 0.5;
 scene.add(ambient);
 
-// Set the camera position to the center of the world
-//camera.position.set(10, 2, 10); // Correctly set the camera position
-const centerX = world.width / 2;
-const centerZ = world.height / 2;
+// Default background color
+scene.background = new THREE.Color(0x87ceeb); // Sky blue
 
-camera.position.set(centerX, 10, centerZ + 10); // Camera position set to the center of the world and 10 units above it
-controls.target.set(centerX, 0, centerZ);       // Set the camera target to the center of the world
-controls.update();
+// GUI for background control
+const backgroundFolder = gui.addFolder('Background');
+const backgroundSettings = {
+  color: '#87ceeb', // Default color in hex format
+  useTexture: false,
+};
+
+backgroundFolder.addColor(backgroundSettings, 'color').name('Background Color').onChange((value) => {
+  scene.background = new THREE.Color(value);
+});
+
+backgroundFolder.add(backgroundSettings, 'useTexture').name('Use Texture').onChange((value) => {
+  if (value) {
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('./path_to_texture.jpg', (texture) => {
+      scene.background = texture;
+    });
+  } else {
+    scene.background = new THREE.Color(backgroundSettings.color);
+  }
+});
 
 function animate() {
   controls.update();
@@ -66,11 +83,13 @@ function animate() {
   stats.update();
 }
 
+/*
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+*/
 
 const worldFolder = gui.addFolder('World');
 worldFolder.add(world, 'width', 1, 20, 1).name('Width');
@@ -79,11 +98,6 @@ worldFolder.add(world, 'treeCount', 1, 100, 1).name('Tree Count');
 worldFolder.add(world, 'rockCount', 1, 100, 1).name('Rock Count');
 worldFolder.add(world, 'bushCount', 1, 100, 1).name('Bush Count');
 worldFolder.add(world, 'generate').name('Generate');
-gui.addColor({ background: scene.background.getStyle() }, 'background')
-    .name('Background Color')
-    .onChange((value) => {
-        scene.background.set(value); // Задаване на новия цвят
-    });
 
 world.objects.players.children.forEach((player) => combatManager.addPlayer(player));
 combatManager.takeTurns(world);
