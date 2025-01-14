@@ -14,7 +14,7 @@ This project is designed to provide a powerful and flexible 3D simulation using 
 
 ## Usage
 
-- Open the project in your browser at `#`.
+- Open the project in your browser at `[GitHub Page](https://alexdeliev.github.io/isometric-rpg-game/)`.
 - Use the GUI panel to customize the scene and interact with the world.
 
 ## File Structure
