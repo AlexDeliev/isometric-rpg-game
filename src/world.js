@@ -7,7 +7,7 @@ import { Tree } from './objects/Tree';
 import { getKey } from './utils';
 
 const textureLoader = new THREE.TextureLoader();
-const gridTexture = textureLoader.load('assets/textures/grid.png');
+const gridTexture = textureLoader.load('textures/grid.png');
 
 export class World extends THREE.Group {
   #objectMap = new Map();
